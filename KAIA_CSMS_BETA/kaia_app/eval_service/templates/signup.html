@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 가입</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/signup.css' %}" type="text/css">
+</head>
+<body>  
+    {% include "base.html" %}
+    
+    <div id="main_container">
+        <form class="login-form" method="post" action='{% url "signup" %}'>
+            {% csrf_token %}
+            <div class="try">
+                <div class="essential-notice">
+                    <h1>기본정보</h1>
+                
+                    <div class="essentail-notice-box">
+                        <p class="essential-notice-star">*</p>
+                        <p class="essential-notice-title">필수입력 정보 입니다</p>
+                    </div>
+                </div>
+
+                <div class="base-signup-wrap">
+                    <div class="base-signup-container">
+                        <p>*</p>
+                        <input type="text" name="username" placeholder="아이디 (4~12자 영문과 숫자)">
+                    </div>
+
+                    <div class="base-signup-container">
+                        <p>*</p>
+                        <input type="password" name="password" placeholder="비밀번호 (10자 이상, 영문, 숫자, 특수문자)">
+                    </div>
+                    <p id="password-error" class="error-message" style="display:none;">비밀번호가 10자 미만이거나, 영문, 숫자, 특수문자 중 어느 하나가 포함되지 않음</p>
+
+                    <div class="base-signup-container">
+                        <p>*</p>
+                        <input type="password" name="passwordCheck" placeholder="비밀번호 확인">
+                    </div>
+                    <p id="password-check-error" class="error-message" style="display:none;">비밀번호가 틀림</p>
+                </div>    
+
+                <h1>회원정보</h1>
+
+
+            
+                <div class="client-signup-wrap">
+                    <div class="client-signup-container">
+                        <p class="">*</p>
+                        <input type="text" name="mb_name" placeholder="이름">
+                    </div>
+
+                    <div class="client-signup-container">
+                        <input type="text" name="mb_hp" placeholder="휴대폰 번호 (-없이 숫자만 입력)">
+                    </div>
+
+                
+                    <div class="client-box-wrap">
+                        <div class="client-signup-container client-signup-box">
+                            <p>*</p>
+                            <input type="text" name="mb_email" placeholder="소속 OEM 또는 평가기관의 이메일">
+                        </div>
+
+                        <button class="self-auth-btn" type="submit">본인인증</button>
+                    </div>
+
+                    
+            
+
+                    <div class="client-box-wrap">
+                        <div class="client-signup-box-two">
+                            <p>*</p>
+                            <input type="text" name="mb_code" placeholder="인증번호">
+                        </div>
+
+                        <button class="confirm-btn" type="submit">확인</button>
+                        <button class="resend-btn">재전송</button>
+                    </div>
+                </div>
+
+                <div>
+                    <h1>회원유형</h1>
+                        <div class="radio-box-wrap">
+                            <div class="radio-group-box">
+                                <div class="form-check-inline">
+                                    <input class="form-check-input" type="radio" name="mb_type" id="oem" value="OEM" />
+                                    <label class="form-check-label" for="oem">OEM (제조사)</label>
+                                </div>
+                            
+                                <div class="form-check-inline">
+                                    <input class="form-check-input" type="radio" name="mb_type" id="eval" value="EVL" />
+                                    <label class="form-check-label" for="eval">평가기관</label>
+                                </div>
+                            </div>
+                    </div>
+                
+                </div>
+                    
+                <input class="signup-btn" type="submit" value="가입하기">
+            </div>
+        </form>
+    </div>
+
+
+    <!-------------------------------------------- 인증 번호 발송 Handler ------------------------------------>
+    <script>
+        const btn = document.getElementsByClassName('self-auth-btn')[0];
+        const resend_btn = document.getElementsByClassName('resend-btn')[0]; 
+        const confirm_btn = document.getElementsByClassName('confirm-btn')[0]; 
+
+        btn.onclick = function (e) {
+            e.preventDefault();
+            const email = document.getElementsByName('mb_email')[0];
+
+            if (email.value != "") {
+                var xhr = new XMLHttpRequest();
+                xhr.responseType='json';
+
+                xhr.onload = function(){
+                    if (xhr.response == 200){
+                        data = xhr.response// 성공 코드가 여기 들어갈 것!
+                        alert(data['message'])
+                    }
+                    else {
+                        const data = xhr.response || {}; // 실패 응답 처리
+                        alert(data['message'] || '메일 전송 실패');
+                    }
+                };
+
+                xhr.open('POST', '/sendcode/', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(`{"mb_email":"${email.value}"}`);
+            } 
+            else { alert('이메일을 입력하세요.') }  
+        };
+
+        resend_btn.onclick = function (e) {
+            e.preventDefault();
+            const email = document.getElementsByName('mb_email')[0];
+
+            if (email.value != "") {
+                var xhr = new XMLHttpRequest();
+                xhr.responseType='json';
+
+                xhr.onload = function(){
+                    if (xhr.response == 200){
+                        alert(data['message'])// 성공 코드가 여기 들어갈 것!
+                    }
+                    else {
+                        data = xhr.response
+                        alert(data['message']) // 실패 코드가 여기 들어갈 것!
+                    }
+
+                };
+
+                xhr.open('POST', '/sendcode/', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(`{"mb_email":"${email.value}"}`);
+            } 
+            else {  
+                // 전화번호를 입력해달라는 코드!!
+            }  
+        };
+
+
+        confirm_btn.onclick = function (e) {
+            e.preventDefault();
+            const code = document.getElementsByName('mb_code')[0];
+
+            if (code.value != "") {
+                var xhr = new XMLHttpRequest();
+                xhr.responseType='json';
+
+                xhr.onload = function(){
+                    if (xhr.response == 200){
+                        data = xhr.response// 성공 코드가 여기 들어갈 것!
+                        alert(data['message'])
+                    }
+                    else {
+                        // 실패 코드가 여기 들어갈 것!
+                        data = xhr.response
+                        alert(data['message'])
+                    }
+
+                };
+
+                xhr.open('POST', '/verify/', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(`{"mb_code":"${code.value}"}`);
+            } 
+            else {  
+                alert('Plz enter email')// 전화번호를 입력해달라는 코드!!
+            }  
+        };
+    </script>
+
+    {% if error %}
+    <script>alert("{{ error }}")</script>
+    {% endif %}
+
+    <!---------------------------------------------------------------------------------------------------------->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.getElementsByName('password')[0];
+
+        // 경고 메시지 span 생성
+        const warningMsg = document.createElement('span');
+        warningMsg.style.color = 'red';
+        warningMsg.style.fontSize = '0.9em';
+        warningMsg.style.display = 'none';
+        warningMsg.style.marginTop = '4px';
+        warningMsg.innerText = '비밀번호가 10자 미만이거나, 영문, 숫자, 특수문자 중 어느 하나가 포함되지 않음 ';
+
+        // 부모 컨테이너 바로 아래에 삽입 (비밀번호 입력창 아래로)
+        const container = passwordInput.closest('.base-signup-container');
+        container.insertAdjacentElement('afterend', warningMsg);
+
+        passwordInput.addEventListener('input', function () {
+            const password = passwordInput.value;
+
+            const isValidLength = password.length >= 10;
+            const hasLetter = /[a-zA-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+            if (isValidLength && hasLetter && hasNumber && hasSpecial) {
+                warningMsg.style.display = 'none';
+            } else {
+                warningMsg.style.display = 'block';
+            }
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.getElementsByName('passwordCheck')[0];
+
+        // 경고 메시지 span 생성
+        const warningMsg = document.createElement('span');
+        warningMsg.style.color = 'red';
+        warningMsg.style.fontSize = '0.9em';
+        warningMsg.style.display = 'none';
+        warningMsg.style.marginTop = '4px';
+        warningMsg.innerText = '비밀번호가 틀림.';
+
+        // 부모 컨테이너 바로 아래에 삽입 (비밀번호 입력창 아래로)
+        const container = passwordInput.closest('.base-signup-container');
+        container.insertAdjacentElement('afterend', warningMsg);
+
+        passwordInput.addEventListener('input', function () {
+            const password_check = passwordInput.value;
+            const password =  document.getElementsByName('password')[0].value;
+
+            const isSame = password_check === password 
+
+            if (isSame) {
+                warningMsg.style.display = 'none';
+            } else {
+                warningMsg.style.display = 'block';
+            }
+        });
+    });
+</script>
+
+
+password-check-error
+
+
+</body>
+</html>

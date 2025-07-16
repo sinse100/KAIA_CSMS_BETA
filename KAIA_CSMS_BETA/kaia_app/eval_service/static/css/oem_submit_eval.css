@@ -1,0 +1,252 @@
+/* 제목 스타일 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+}
+
+.container {
+    margin-top: 5vh; /* nav와 container 사이에 간격 */
+    width: 100%;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.title {
+    text-align: center;
+}
+
+.title-container {
+    display: flex; /* 아이콘과 텍스트를 같은 줄에 배치 */
+    align-items: center; /* 수직 가운데 정렬 */
+    justify-content: center; /* 수평 중앙 정렬 */
+    gap: 10px; /* 아이콘과 텍스트 사이의 간격 */
+}
+
+
+.title .eval_oem_icon {
+    width: 40px; /* 아이콘 크기 */
+    height: 40px; /* 아이콘 크기 */
+}
+
+.divider {
+    margin-top: 2vh; /* 버튼 아래 간격 */
+    margin-bottom: 2vh; /* 버튼 아래 간격 */
+}
+
+.submit-btn-container {
+    display: flex; /* Flexbox 활성화 */
+    justify-content: space-between; /* 오른쪽 정렬 */
+    align-items: center; /* 세로 방향 중앙 정렬 */
+    margin-bottom: 10px; /* 버튼 아래 간격 */
+    width: 100%;
+
+}
+
+.zip-upload-btn {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.zip-file-name {
+    font-size: 0.9rem;
+    color: #555;
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    overflow: hidden;
+    text-overflow: ellipsis; /* 긴 텍스트 줄임표 처리 */
+    max-width: 150px; /* 최대 너비 설정 */
+}
+
+
+.submit-btn {
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+
+
+
+.zip-upload-btn:hover,
+.submit-btn:hover {
+    background-color: #0056b3;
+}
+
+.table-container {
+    display: flex; /* Flexbox 활성화 */
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+    min-height: 10vh; /* 화면 전체 높이 확보 */
+}
+
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #e0e0e0;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* 헤더별 너비 비율 설정 */
+th:nth-child(1) {
+    width: 5%; /* 번호 */
+}
+
+th:nth-child(2) {
+    width: 5%; /* 범주 */
+}
+
+th:nth-child(3) {
+    width: 5%; /* 항목 */
+}
+
+th:nth-child(4) {
+    width: 25%; /* 평가 기준 */
+}
+
+th:nth-child(5) {
+    width: 28%; /* 질문 예시 */
+}
+
+th:nth-child(6) {
+    width: 12%; /* 증거 자료 예시 */
+}
+
+th:nth-child(7) {
+    width: 15%; /* 인증 기준 불합격 사례 */
+}
+
+tr > td:nth-child(4), tr > td:nth-child(5) {
+    text-align: left;
+}
+
+
+.icon {
+    text-align: center;
+}
+
+.icon img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.icon img:hover {
+    opacity: 0.7;
+}
+
+.help-btn {
+    background: none; /* 배경 제거 */
+    border: none; /* 테두리 제거 */
+    position: relative; /* 툴팁 위치를 버튼 기준으로 설정 */
+    cursor: pointer; /* 클릭 가능한 상태로 설정 */
+    padding: 0; /* 내부 여백 제거 */
+}
+
+
+/* 업로드 버튼 스타일 */
+.upload-btn {
+    background: none; /* 배경 제거 */
+    border: none; /* 테두리 제거 */
+    cursor: pointer; /* 클릭 가능한 상태로 설정 */
+    padding: 0; /* 내부 여백 제거 */
+}
+
+.upload-btn img {
+    width: 24px; /* 이미지 크기 */
+    height: 24px;
+}
+
+.upload-btn img:hover {
+    opacity: 0.7; /* 호버 시 살짝 어두워짐 */
+}
+
+/* 툴팁 스타일 */
+.tooltip {
+    display: none; /* 기본적으로 툴팁 숨기기 */
+    position: absolute;
+    bottom: 130%; /* 버튼 위로 띄우기 */
+    left: 50%; /* 중앙 정렬 */
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8); /* 검은색 반투명 배경 */
+    color: #fff; /* 글자색 흰색 */
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 0.875rem;
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 툴팁 화살표 */
+.tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%; /* 툴팁 아래쪽 */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+}
+
+.help-btn:hover .tooltip {
+    display: block;
+}
+
+/* 업로드된 파일 정보 표시 스타일 */
+.file-display {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+.file-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+}
+
+.file-name {
+    font-size: 0.9rem;
+    color: #333;
+    max-width: 150px; /* 최대 너비 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 줄임표 표시 */
+}
+
+

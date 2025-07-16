@@ -1,0 +1,232 @@
+/* style.css */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+  }
+  
+  .container {
+    margin: 20px auto;
+    width: 90%;
+    max-width: 1200px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .logo {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    padding: 0;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: #333;
+  }
+  
+  .auth-buttons button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    cursor: pointer;
+  }
+  
+  .main-box {
+    padding: 30px;
+  }
+  
+  .intro h1 {
+    font-size: 36px; /* 가장 큰 크기로 설정 */
+    font-weight: bold; /* 굵게 설정 */
+    margin-bottom: 10px;
+  }
+  
+  .intro {
+    text-align: center;
+    margin-bottom: 50px; /* 섹션 아래 여백 추가 */
+    border-bottom: 2px solid #ddd; /* 구분선 유지 */
+    padding-bottom: 20px; /* 구분선과 텍스트 사이 간격 */
+  }
+  
+  
+  .evaluation-structure {
+    margin: 50px 0; /* 위와 아래 간격 추가 */
+    text-align: center;
+  }
+  
+  /* 상단 두 박스와 화살표 */
+  .structure-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px; /* 하단 중앙 박스와의 간격 */
+  }
+  
+  .participant-box {
+    width: 30%;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .system-box {
+    width: 100%;
+    height: 10%;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 1px;
+    background-color: #f9f9f9;
+  }
+  
+  
+  .image-box {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  
+  .image-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  
+  /* 화살표 스타일 */
+  .arrows {
+    text-align: center;
+    font-size: 48px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  
+  
+  .arrow-with-text {
+    text-align: center;
+  }
+  
+  .arrow-with-text p {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .arrow {
+    font-size: 80px; /* 크기를 크게 설정 */
+    font-weight: bold; /* 굵게 설정 */
+  }
+  
+  
+  .participant-image {
+    width: 100px;
+    height: auto;
+    margin-bottom: 10px;
+  }
+  
+  
+  
+  /* 사이트 주요 기능 섹션 간격 */
+  .site-features {
+    margin-top: 50px; /* 위쪽 간격 추가 */
+    text-align: center;
+  }
+  
+  .site-box {
+    width: 100%;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 5px;
+    background-color: #f9f9f9;
+    margin-top: 20px;
+  }
+  
+  .features {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* 버튼 간 간격 */
+    justify-content: center;
+    padding: 0;
+  }
+  
+  .feature-button {
+    padding: 10px 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .feature-button:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.05);
+  }
+  
+  .features li {
+    padding: 15px 25px; /* 버튼 내부 여백 확대 */
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 버튼 가독성 추가 */
+    transition: all 0.3s ease;
+  }
+  
+  .features li:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.05); /* 버튼 강조 효과 */
+  }
+  
+  .description-box {
+    margin-top: 30px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .content-center {
+    margin: auto;
+    width: 100%;
+    padding: 10px;
+    text-align: center; /* 가로 정렬 */
+    display: flex; /* flexbox 사용 */
+    flex-direction: column; /* 수직 방향 정렬 */
+    justify-content: center; /* 세로 중앙 정렬 */
+    align-items: center; /* 가로 중앙 정렬 */
+    height: 50px; /* 높이를 설정해야 세로 정렬이 적용됨 */
+  }
+  

@@ -1,0 +1,157 @@
+main {
+    display: flex;
+    /* 가로를 기준으로 가운데 정렬 */
+    justify-content: center; 
+    align-items: center;
+    height: 100vh;
+    box-sizing: border-box;
+    width: 100vw;
+}
+
+h1 {
+    font-family: 'LeferiBaseType-BoldA';
+    text-align: center;
+    color: #9ad7f5;
+    font-size: 48px;
+    margin-bottom: 50px;
+}
+
+.social-login-title {
+    font-family: 'Pretendard';
+    font-weight: 300;
+    color: #535c6a;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.social-login-container {
+    width: 400px;
+    height: 50px;
+    margin: 0px auto;
+}
+
+.social-login-container > img {
+    width: 40px;
+    height: 40px;
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
+.login-input-container {
+    display: flex;
+    /* 세로 가운데 정렬 */
+    align-items: center;
+    border-style: solid;
+
+    border-radius: 6px;
+    width: 453px;
+    height: 54px;
+    margin: 30px auto;
+
+    border-style: solid;
+    /* box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.1); */
+    border-width: 1px;
+    border-color: #e9e9e9;
+    border-radius: 6px;
+
+}
+
+.login-input-container p {
+    font-family: 'Pretendard';
+    font-weight: 300;
+    font-size: 16px;
+    margin-left: 26px;
+    margin-right: 20px;
+
+}
+
+.login-input-container input {
+    font-family: 'Pretendard';
+    font-weight: 100;
+    width: 100%;
+    border: none;
+    font-size: 16px;
+    
+}
+
+.login-input-container input:focus {
+    outline: none;
+}
+
+.login {
+    font-family: 'Pretendard';
+    font-weight: 200;
+    font-size: 17px;
+    color: #1b1b1b;
+    display: block;
+    margin: 40px auto;
+
+}
+
+.account {
+    border-style: solid;
+    /* box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.1); */
+    border-width: 1px;
+    border-color: #e9e9e9;
+    border-radius: 6px;
+}
+
+button {
+    background-color: white;
+    border-style: solid;
+    border-color: #9AD7F5;
+    width: 290px;
+    height: 46px;
+    border-radius: 14px;
+}
+
+.login:hover {
+    cursor: pointer;
+    background-color: #9AD7F5;
+    color: white;
+    font-weight: 400;
+}
+
+.checkbox_checked {
+    width: 14px;
+    height: 14px;
+    margin: 6px;
+}
+
+.lgoin-status {
+    font-family: 'IBMPlexSansKR-Light';
+    font-size: 14px;
+    color: #535c6a;
+    display: flex;
+    align-items: center;
+    margin-right: 80px;
+}
+
+.login-detail{
+    display: flex;
+}
+
+.login-finder-signup {
+    display: flex;
+    align-items: right;
+}
+
+.login-finder-signup a {
+    font-family: 'IBMPlexSansKR-Light';
+    font-size: 14px;
+    color: #535c6a;
+    text-decoration: none;
+}
+
+.login-finder-signup p {
+    /* width: 6px;
+    height: 28px; */
+    font-family: 'Pretendard';
+    font-weight: 400;
+    font-size: 14px;
+    color: #9ad7f5;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-top: auto;
+    margin-bottom: auto;
+}

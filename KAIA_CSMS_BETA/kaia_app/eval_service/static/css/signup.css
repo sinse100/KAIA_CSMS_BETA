@@ -1,0 +1,290 @@
+#main_container {
+    display: flex;
+    /* flex-direction: column; */
+    /* 가로를 기준으로 가운데 정렬 */
+    justify-content: center; 
+    align-items: center;
+    height: 100vh;
+    box-sizing: border-box;
+    width: 100vw;
+}
+
+h1 {
+    font-family: 'Pretendard';
+    font-weight: 600;
+    color: #535c6a;
+    font-size: 22px;
+    margin-bottom: 30px;
+}
+
+.essential-notice {
+    display: flex;
+    justify-content: space-between;
+    width: 500px;
+}
+
+.essentail-notice-box {
+    display: flex;
+    justify-content: center;
+}
+
+.essential-notice-star {
+    font-family: 'Pretendard';
+    font-weight: 300;
+    color:#9ad7f5;
+    font-size: 15px;
+    margin: 4px;
+}
+
+.essential-notice-title {
+    font-family: 'Pretendard';
+    font-weight: 300;
+    color: #535c6a;
+    font-size: 15px;
+}
+
+.base-signup-wrap {
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.base-signup-container {
+    display: flex;
+    align-items: center;
+    border-style: solid;
+    /* box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.1); */
+    border-width: 1px;
+    color: #e9e9e9;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    height: 48px;
+    padding: 4px 20px;
+}
+
+.base-signup-container p {
+    font-family: 'Pretendard';
+    font-weight: 300;
+    color:#9ad7f5;
+    font-size: 15px;
+    /* margin: 10px; */
+    margin-right: 3px;
+    margin-top: 3px;
+}
+
+.base-signup-container input {
+    font-family: 'Pretendard';
+    font-weight: 200;
+    width: 100%;
+    border-radius: 6px;
+    border: none;
+}
+
+.base-signup-container input:focus {
+    outline: none;
+}
+
+
+.client-signup-wrap {
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.client-signup-container {
+    display: flex;
+    align-items: center;
+    border-style: solid;
+    /* box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.1); */
+    border-width: 1px;
+    color: #e9e9e9;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    height: 48px;
+    padding: 4px 20px;
+}
+
+.client-signup-container p {
+    font-family: 'Pretendard';
+    font-weight: 300;
+    color:#9ad7f5;
+    font-size: 15px;
+}
+
+.client-signup-container input {
+    font-family: 'Pretendard';
+    font-weight: 200;
+    width: 100%;
+    border-radius: 6px;
+    border: none;
+}
+
+.client-signup-container input:focus {
+    outline: none;
+}
+
+.client-box-wrap {
+    display: flex;
+    justify-content: space-between;
+    width: 500px;
+}
+
+.client-signup-box {
+    width: 300px;
+}
+
+.client-signup-box p {
+    font-family: 'Pretendard';
+    font-weight: 300;
+    color:#9ad7f5;
+    font-size: 15px;
+}
+
+.client-signup-box input {
+    font-family: 'Pretendard';
+    font-weight: 200;
+    width: 100%;
+    border-radius: 6px;
+    border: none;
+}
+
+
+.self-auth-btn {
+    background-color: white;
+    border-style: solid;
+    border-color: #9AD7F5;
+    width: 140px;
+    height: 56px;
+    border-radius: 6px;
+    font-family: 'Pretendard';
+    font-weight: 300;
+    font-size: 15px;
+    color: #535c6a;
+}
+
+.self-auth-btn:hover {
+    cursor: pointer;
+    background-color: #9AD7F5;
+    color: white;
+}
+
+.client-signup-box-two {
+    display: flex;
+    align-items: center;
+    border-style: solid;
+    /* box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.1); */
+    border-width: 1px;
+    color: #e9e9e9;
+    border-radius: 6px;
+    /* margin-bottom: 20px; */
+    height: 48px;
+    width: 230px;
+    padding: 4px 20px;
+}
+
+.client-signup-box-two p {
+    font-family: 'Pretendard';
+    font-weight: 300;
+    color:#9ad7f5;
+    font-size: 15px;
+}
+
+.client-signup-box-two input {
+    font-family: 'Pretendard';
+    font-weight: 200;
+    width: 100%;
+    border-radius: 6px;
+    border: none;
+}
+
+.confirm-btn {
+    background-color: white;
+    border-style: solid;
+    border-color: #9AD7F5;
+    width: 60px;
+    height: 56px;
+    border-radius: 6px;
+    font-family: 'Pretendard';
+    font-weight: 300;
+    font-size: 15px;
+    color: #535c6a;
+}
+
+.confirm-btn:hover {
+    cursor: pointer;
+    background-color: #9AD7F5;
+    color: white;
+}
+
+.resend-btn {
+    background-color: white;
+    border-style: solid;
+    border-color: #babcbf;
+    width: 140px;
+    height: 56px;
+    border-radius: 6px;
+    font-family: 'Pretendard';
+    font-weight: 300;
+    font-size: 15px;
+    color: #535c6a;
+}
+
+.resend-btn:hover {
+    cursor: pointer;
+    background-color: #babcbf;
+    color: white;
+}
+
+.signup-btn {
+    background-color: #9AD7F5;
+    border-style: none;
+    width: 100%;
+    height: 48px;
+    border-radius: 6px;
+    font-family: 'Pretendard';
+    font-weight: 600;
+    font-size: 15px;
+    color: white;
+}
+
+.signup-btn:hover {
+    cursor: pointer;
+    background-color: white;    
+    color: #9AD7F5;
+    border-color: #9AD7F5;;
+    border-style: solid;
+}
+
+
+.radio-box-wrap {
+    display: flex;
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center;    /* 수직 중앙 정렬 */
+    height: 100px;          /* div의 높이 (필요에 따라 조정 가능) */
+    gap: 20px;              /* 라디오 버튼 간 간격 */
+}
+
+.radio-group-box {
+    display: flex;
+    justify-content: center; /* 내부 요소를 수평 정렬 */
+    align-items: center;    /* 내부 요소를 수직 정렬 */
+    gap: 20px;              /* 라디오 버튼 간 간격 */
+    width: 100%; 
+    border: 2px solid #ccc; /* 박스 테두리 */
+    border-radius: 10px;    /* 모서리 둥글게 */
+    padding: 20px;          /* 내부 여백 */
+    background-color: #f9f9f9; /* 박스 배경색 */
+}
+
+.form-check-inline {
+    display: flex;
+    align-items: center;    /* 라디오 버튼과 라벨의 수직 정렬 */
+    gap: 5px;               /* 라디오 버튼과 라벨 간 간격 */
+    margin: 0 10%;  
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: -15px;
+    margin-bottom: 15px;
+    font-family: 'Pretendard';
+}

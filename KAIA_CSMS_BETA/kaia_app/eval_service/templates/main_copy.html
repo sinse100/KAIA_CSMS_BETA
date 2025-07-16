@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+{% load static %}
+<!-- (메모) 모든 정적 파일의 요청 경로를 eval_service/static/... 으로 설정-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메인페이지</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+
+<body>
+
+    <!-- 네비게이션 바 별도로 import-->
+    {% include "base.html" %}
+
+    <main>
+        <div class="main-box">
+          <section class="intro">
+            <h1>자동차 사이버 보안 관리 시스템(CSMS) 평가 서비스</h1>
+          </section>
+          <div class="content-center">
+            <p>자동차 사이버 보안 관리 시스템(CSMS) 평가에 필요한 평가 자료 관리 및 평가 시스템으로 평가자와 피평가자 간 효율적인 자료관리 서비스를 제공합니다.</p>
+            <p>CSMS 평가 과정을 체계적을 관리하며 항목별 평가 진행도를 실시간으로 확인하여 전체적인 평가 프로세스 시간을 단축합니다.</p>
+          </div>
+          <section class="evaluation-structure"><div class="system-box"><h2>평가 시스템 구조</h2></div>
+            <div class="structure-container">
+                <div class="participant-box">
+                    <p>피평가자(OEM)</p>
+                    <div class="image-box">
+                        <img src="{% static 'img/user.png' %}"img src="user.png" alt="피평가자(OEM)">
+                    </div>
+            </div>
+        
+            <div class="arrows">
+                <div class="arrow-with-text">
+                    <p>평가 신청</p>
+                    <div class="arrow">→</div>
+                </div>
+                <div class="arrow-with-text">
+                    <div class="arrow">←</div>
+                    <p>항목 평가</p>
+                </div>
+            </div>
+            <div class="participant-box">
+                <p>평가자</p>
+                <div class="image-box">
+                    <img src="{% static 'img/assessor.png' %}" alt="평가자">
+                </div>
+            </div>
+        </div>
+    </section>
+  
+    <section class="site-features">
+        <div class="system-box">
+            <h2>CSMS 평가 시스템 주요 기능</h2>
+        </div>
+        <div class="site-box">
+            <div class="features">
+                <button class="feature-button" data-description="피평가자(OEM)는 CSMS 평가에 해당하는 항목 리스트를 엑셀과 같은 형태로 제출하고 이를 평가 신청 할 수 있습니다.">
+                평가 신청
+                </button>
+                <button class="feature-button" data-description="평가자는 자신에게 할당된 피평가자의 개인정보 및 요청한 평가 자료를 리스트로 관리하고 평가할 수 있습니다.">
+                항목 평가
+                </button>
+                <button class="feature-button" data-description="평가 체크리스트 항목 분야별로 평가된 점수를 확인 가능하며 종합된 평가 점수를 바탕으로 한 차트를 통해 한 눈에 확인 할 수 있습니다.">
+                평가 결과 확인
+                </button>
+                <button class="feature-button" data-description="CSMS 평가 항목에서 평가 증거물 제출이 필요할 겨우 해당하는 항목란에서 평가 증거물을 추가로 제출 할 수 있습니다.">
+                평가 증거물 제출
+                </button>
+            </div>
+            <div id="feature-description" class="description-box">
+                CSMS 평가 시스템의 여러가지 기능을 소개합니다 
+            </div>
+        </div>
+    </section>
+</div>
+</main>
+<script>
+    // 버튼 클릭 시 설명을 표시하는 함수
+  document.querySelectorAll('.feature-button').forEach(button => {
+    button.addEventListener('click', function () {
+      const descriptionBox = document.getElementById('feature-description');
+      descriptionBox.textContent = this.dataset.description; // 버튼의 데이터 속성 값 사용
+    });
+  });
+</script>
+</body>
+</html>

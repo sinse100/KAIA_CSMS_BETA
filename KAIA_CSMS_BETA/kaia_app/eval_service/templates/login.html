@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+{% load static %}
+<!-- (메모) 모든 정적 파일의 요청 경로를 eval_service/static/... 으로 설정-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" type="text/css">
+    <link rel="shortcut icon" href="{% static 'image/favicon.ico' %}"/>
+</head>
+
+<body>
+    {% include "base.html" %}
+    
+    <main>
+        <div class="try">
+            <h1>CSMS 평가 서비스</h1>
+
+            <p class="social-login-title">다른 서비스로 로그인</p>
+
+            <div class="social-login-container">
+                <img src="{% static 'img/google.png' %}" alt="" onclick="alert('not implemented yet')">
+                <img src="{% static 'img/naver.png' %}" alt="" onclick="alert('not implemented yet')">
+                <img src="{% static 'img/kakaotalk.png' %}" alt="" onclick="alert('not implemented yet')">
+                <img src="{% static 'img/facebook.png' %}" alt="" onclick="alert('not implemented yet')">
+            </div>
+            
+            <form class="login-form" method="post" action='{% url "login" %}'>
+                {% csrf_token %}
+                <div class="login-input-container ">
+                    <p>ID</p>
+                    <input type="text"  name="username" class="account" placeholder="ID 입력">
+                </div>
+                    
+                <div class="login-input-container">
+                    <p>PW</p>
+                    <input type="password" name="password" class="account" placeholder="비밀번호 입력">
+                </div>
+                <!--
+                <input type="hidden" name="remember_session" value="1">
+                -->
+                <button class="login" type="submit" onclick="">로그인</button>
+                <div class ="login-detail">
+                  </div>
+            </form>
+            
+
+            <div class ="login-detail">
+
+
+<!--
+                <div class="lgoin-status">
+                    <img class="checkbox_checked" src="{% static 'img/checkbox_checked.png' %}" alt="">
+                    <p>로그인 상태 유지</p>
+                </div>
+-->
+                <div class="login-finder-signup">
+                    
+                    <input type="checkbox" name="remember_session" class="checkbox_checked" checked>
+                    
+                    <p>로그인 상태 유지</p>
+                    <p>|</p>
+                    <a href="">아이디 찾기</a>
+                    <p>|</p>
+                    <a href="">비밀번호 재설정</a>
+                    <p>|</p>
+                    <a href="{% url 'signup'  %}">회원가입</a> 
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    </script>
+</body>
+</html>

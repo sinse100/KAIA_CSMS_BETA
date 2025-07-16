@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+{% load static %}
+<!-- (메모) 모든 정적 파일의 요청 경로를 eval_service/static/... 으로 설정-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>평가 내역</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" type="text/css">
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}"/>
+    <link rel="stylesheet" href="{% static 'css/oem_list_eval.css' %}"/>
+</head>
+
+<body>
+    <!-- 네비게이션 바 별도로 import-->
+    {% include "base.html" %}
+    
+    <div class="container">
+        <h2>평가 내역</h2>
+        <table class="assessment-table">
+            <thead>
+                <tr>
+                    <th>제출 파일</th>
+                    <th>신청 날짜</th>
+                    <th>평가 결과</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in page_data %}
+                <tr>
+                    <td>
+                        <a href="{{ file.download_url }}" download>
+                            <img src="{% static 'img/zip-file-format.png' %}" alt="Zip 파일" class="icon"> 
+                            {{ file.original_name }}
+                        </a>
+                    </td>
+                    <td>{{ file.created_time }}</td>
+                    <td>
+                        {% if file.state  == "done" %}
+                        <a href="{% url 'show_eval_result' %}?submit={{ file.key }}" target="_blank">
+                            <img src="{% static 'img/web.png' %}" alt="웹" class="icon">
+                        </a>
+                        <a href="#" download>
+                            <img src="{% static 'img/pdf-file.png' %}" alt="PDF" class="icon">
+                        </a>
+                        {% else %}
+                        <strong>-</strong>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+        <div class="pagination">
+            {% if 0 < prev_page %}
+            <a href="?page= {{ prev_page }}">
+                <img src="{% static 'img/left-arrow.png' %}" alt="이전" class="pagination-arrow">
+            </a>
+            {% endif %}
+            {% for num in page_range %}
+                {% if num == page_number %}
+                <a class="number_block_unclickable" href="?page={{ num }}" >{{ num }}</a> <!--현재 페이지-->
+                {% else %}
+                <a class="number_block" href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}    
+            <!--
+            <a class="number_block" href="?page=1">1</a>
+            <a class="number_block" href="?page=2">2</a>
+            <a class="number_block" href="?page=3">3</a>
+            -->
+            {% if page_number < page_count %}
+            <a href="?page= {{ next_page }}">
+                <img src="{% static 'img/right-arrow.png' %}" alt="다음" class="pagination-arrow">
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
