@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+{% load static %}
+<!-- (메모) 모든 정적 파일의 요청 경로를 eval_service/static/... 으로 설정-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>평가 내역</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" type="text/css">
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}"/>
+    <link rel="stylesheet" href="{% static 'css/show_eval_result.css' %}"/>
+    <script src="https://code.jscharting.com/latest/jscharting.js"></script>
+</head>
+
+<body>
+    <!-- 네비게이션 바 별도로 import-->
+    {% include "base.html" %}
+
+    <div class="container">
+        <h1>평가 결과 요약</h1>
+        <div class="summary">
+            <div class="info-box">
+                <h3>평가 일시 및 평가자 정보</h3>
+                <table>
+                    <tr>
+                        <td>평가일자</td>
+                        <td>{{evaluation_date}}</td>
+                    </tr>
+                    <tr>
+                        <td>제출일자</td>
+                        <td>{{created_date}}</td>
+                    </tr>
+                    <tr>
+                        <td>평가자 이메일</td>
+                        <td>{{evaluator_email}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="chart-box">
+                <h2>범주 별 달성률</h2>
+                <br>
+                <svg id="radarChart" class="radar-chart"></svg>
+            </div>
+        </div>
+        <!--
+        <div class="score-summary">
+            <div class="score-row">
+                <span class="icon">⚙️</span>
+                <span>일반 사항</span>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 0%;"></div>
+                </div>
+                <span>0%</span>
+            </div>
+            <div class="score-row">
+                <span class="icon">🔄</span>
+                <span>개발 생명주기</span>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 0%;"></div>
+                </div>
+                <span>0%</span>
+            </div>
+            <div class="score-row">
+                <span class="icon">🌐</span>
+                <span>공급업체 관리</span>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 0%;"></div>
+                </div>
+                <span>0%</span>
+            </div>
+            <div class="score-row">
+                <span class="icon">⚠️</span>
+                <span>위험 관리</span>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 0%;"></div>
+                </div>
+                <span>0%</span>
+            </div>
+        </div>
+    </div>
+    -->
+    <div class="container">
+        <h1>평가 결과 상세 (항목별)</h1>
+        <br>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <!-- 표 머릿말 생성 -->
+                        {% for column in columns %}
+                        <th>{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+            
+                <tbody>
+                <!-- 표의 각 행 생성 -->
+                {% for row in result_list %}
+                <tr>
+                    <td>{{row.번호}} <input type="hidden" value="{{row.번호}}" name="result{{row.번호}}[number]"></td>
+                    <td>{{row.범주}} <input type="hidden" value="{{row.범주}}" name="result{{row.번호}}[category]"></td>
+                    <td>{{row.항목}} </td>
+                    <td>{{ row.평가_기준 }} </td>
+                    <td class="icon">
+                        <button class="help-btn">
+                            <img src="{% static 'img/help_question.png' %}" alt="질문_예시">
+                            <span class="tooltip">{{row.질문_예시 | linebreaksbr}}</span>
+                        </button>
+                    </td>
+                    <td class="icon">
+                        <button class="help-btn">
+                            <img src="{% static 'img/help_question.png' %}" alt="증거물 예시">
+                            <span class="tooltip">{{row.증거자료_예시  | linebreaksbr }}</span>
+                        </button>
+                    </td>
+                    <td class="icon">
+                        <button class="help-btn">
+                            <img src="{% static 'img/help_question.png' %}" alt="불합격 사례">
+                            <span class="tooltip">{{ row.인증기준_불합격_사례  | linebreaksbr }}</span>
+                        </button>
+                    </td>
+                    <td>
+                        {% if row.passfail == "P" %}
+                        <label>
+                            <!--<input type="radio" name="result{{row.번호}}[passfail]" value="P" checked> 합격-->
+                            <img src="{% static 'img/pass.png' %}" alt="통과" class="pass_failure_icon">
+                        </label>
+                        {% else %}
+                        <label>
+                            <!--<input type="radio" name="result{{row.번호}}[passfail]" value="F"> 불합격 -->
+                            <img src="{% static 'img/nonpass.png' %}" alt="불통" class="pass_failure_icon">
+                        </label>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <!--<input type="text" value="" class="eval_result_data" id="pass_failure_rationale" placeholder="통과 및 불합격 사유 입력">-->
+                        <textarea class="pass_failure_rationale" name="result{{row.번호}}[rationale]"  placeholder="통과 및 불합격 사유 입력" readonly>{{ row.rationale }}</textarea>
+                    </td>
+                </tr>
+                {% endfor %}
+           
+                    <!-- 추가 행 -->
+                </tbody>
+            </table>
+            <!-- 여기에 평가 항목 표 HTML 추가 -->
+    </div>
+    </div>
+
+    <script>
+
+    const chartData = JSON.parse('{{ completion_ratio|safe }}');
+
+    console.log("Chart Data:", chartData);
+
+    // 딕셔너리의 키를 라벨로, 값을 데이터 값으로 분리
+    const labels = Object.keys(chartData); // ["항목1", "항목2", "항목3"]
+    const data = Object.values(chartData); // [70, 50, 90]
+//const data = [78.2, 81.2, 54.5,33.2,12.3]; // 데이터 값 (0~100 범위)
+//const labels = ["정보보호 관리체계", "사이버보안 엔지니어링", "사이버보안 위험관리","공급망 관리","사이버보안 교육및인지"]; // 항목 레이블
+const levels = 5; // 레이더 차트 레벨 수
+const maxValue = 100; // 데이터 최대값
+const chartSize = 200; // 차트 반지름
+const padding = 50; // 패딩 추가 (잘림 방지)
+const centerX = chartSize + padding; // 차트 중심 X 좌표
+const centerY = chartSize + padding; // 차트 중심 Y 좌표
+const startAngle = -Math.PI / 2; // 첫 번째 점을 위쪽에 배치 (-90도)
+
+// SVG 생성
+const svg = document.getElementById("radarChart");
+svg.setAttribute("viewBox", `0 0 ${chartSize * 2 + padding * 2} ${chartSize * 2 + padding * 2}`);
+svg.setAttribute("width", `${chartSize * 2 + padding * 2}`);
+svg.setAttribute("height", `${chartSize * 2 + padding * 2}`);
+
+// 원형 레벨 그리기 및 경계값 추가
+for (let level = 1; level <= levels; level++) {
+    const radius = (chartSize / levels) * level;
+    const polygon = createPolygon(radius, labels.length);
+    polygon.setAttribute("stroke", "#ccc");
+    polygon.setAttribute("fill", "none");
+    svg.appendChild(polygon);
+
+    // 경계값을 변 위에 정확히 배치
+    for (let i = 0; i < labels.length; i++) {
+        const angle1 = startAngle + (2 * Math.PI / labels.length) * i;
+        const angle2 = startAngle + (2 * Math.PI / labels.length) * (i + 1);
+
+        // 변의 시작점과 끝점 계산
+        const x1 = centerX + Math.cos(angle1) * radius;
+        const y1 = centerY + Math.sin(angle1) * radius;
+        const x2 = centerX + Math.cos(angle2) * radius;
+        const y2 = centerY + Math.sin(angle2) * radius;
+
+        // 변의 중간 지점 계산
+        const midX = (x1 + x2) / 2;
+        const midY = (y1 + y2) / 2;
+
+        const levelValue = (maxValue / levels) * level;
+        const levelText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        levelText.setAttribute("x", midX);
+        levelText.setAttribute("y", midY);
+        levelText.setAttribute("class", "axis-label");
+        levelText.textContent = levelValue;
+        levelText.style.textAnchor = "middle";
+
+        // 정렬과 각도에 따라 수직 정렬 설정
+        levelText.style.dominantBaseline = "central"; // 변 위 중앙에 위치
+        levelText.style.fontSize = "12px";
+        levelText.style.fontWeight = "bold"; // 볼드 처리
+        svg.appendChild(levelText);
+    }
+}
+
+// 데이터 다각형 그리기
+const dataPolygon = createPolygonFromData(data, maxValue, chartSize);
+dataPolygon.setAttribute("stroke", "#4caf50");
+dataPolygon.setAttribute("fill", "rgba(76, 175, 80, 0.5)");
+svg.appendChild(dataPolygon);
+
+// 데이터 값 표시 위치 조정
+data.forEach((value, index) => {
+    const angle = startAngle + (2 * Math.PI / data.length) * index;
+    const radius = (value / maxValue) * chartSize;
+    const x = centerX + Math.cos(angle) * radius;
+    const y = centerY + Math.sin(angle) * radius;
+
+    const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    valueText.setAttribute("x", x);
+    valueText.setAttribute("y", y - 10); // 데이터 값을 약간 위쪽으로 이동
+    valueText.setAttribute("class", "data-label");
+    valueText.textContent = value.toFixed(1); // 소수점 첫째 자리까지만 표시
+    valueText.style.textAnchor = "middle";
+    valueText.style.fontSize = "12px";
+    valueText.style.fill = "#333";
+    svg.appendChild(valueText);
+});
+
+// 레이블 위치 조정 및 잘림 방지
+labels.forEach((label, index) => {
+    const angle = startAngle + (2 * Math.PI / labels.length) * index;
+    const x = centerX + Math.cos(angle) * (chartSize + 25); // 약간 더 바깥쪽으로 위치 조정
+    const y = centerY + Math.sin(angle) * (chartSize + 25); // 위치 조정
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", x);
+    text.setAttribute("y", y);
+    text.setAttribute("class", "axis-label");
+    text.textContent = label;
+
+    // 텍스트 정렬 및 위치 보정
+    text.style.textAnchor = "middle";
+    text.style.dominantBaseline = "central"; // 수직 정렬
+    svg.appendChild(text);
+});
+
+// 다각형 생성 함수
+function createPolygon(radius, pointsCount) {
+    const points = [];
+    for (let i = 0; i < pointsCount; i++) {
+        const angle = startAngle + (2 * Math.PI / pointsCount) * i;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        points.push(`${x},${y}`);
+    }
+    const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    polygon.setAttribute("points", points.join(" "));
+    return polygon;
+}
+
+// 데이터 기반 다각형 생성 함수
+function createPolygonFromData(data, maxValue, size) {
+    const points = [];
+    data.forEach((value, index) => {
+        const angle = startAngle + (2 * Math.PI / data.length) * index;
+        const radius = (value / maxValue) * size;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        points.push(`${x},${y}`);
+    });
+    const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    polygon.setAttribute("points", points.join(" "));
+    return polygon;
+}
+
+
+
+        /*
+// 초기 차트를 생성합니다.
+const chart = new JSC.Chart('spiderChart', {
+    type: 'radar',
+    legend_visible: false,
+    xAxis: {
+        scale: { interval: 1 }
+    },
+    yAxis: {
+        scale: { 
+            range: [0, 100], // Y축의 범위를 0에서 100으로 고정
+            interval: 20 // Y축 눈금 간격을 20으로 설정
+        }
+    },
+    chartArea: {
+        margin: 0,
+        fill: 'transparent', // 불필요한 배경 제거
+    },
+    defaultSeries: {
+        shape: 'polygon', // 차트를 다각형으로 설정
+        defaultPoint_label: {
+            visible: true,
+            placement: 'outside', // 데이터 레이블을 차트 바깥쪽에 배치
+        }
+    },
+    series: [
+        {
+            name: '평가 점수',
+            points: [
+                { x: '일반 사항', y: 11 },
+                { x: '개발 생명주기', y: 23 },
+                { x: '공급업체 관리', y: 80 },
+                { x: '위험 관리', y: 34 }
+            ]
+        }
+    ]
+});
+
+
+// 박스 크기를 감지하여 차트 크기 업데이트 함수
+function resizeChart() {
+    const chartBox = document.querySelector('.chart-box'); // 차트가 포함된 박스 선택
+    const chartElement = document.getElementById('spiderChart'); // 차트 컨테이너 선택
+
+    // 부모 박스 크기를 기준으로 차트 컨테이너 크기 조정
+    chartElement.style.width = `${chartBox.clientWidth+60}px`;
+    chartElement.style.height = `${chartBox.clientHeight+60}px`;
+
+    // 차트도 크기 업데이트
+    chart.options({ width: chartBox.clientWidth+60, height: chartBox.clientHeight+60 });
+}
+
+// 초기 실행
+resizeChart();
+
+// 창 크기 변경 시 차트 크기 업데이트
+window.addEventListener('resize', resizeChart);
+
+*/
+    </script>
+    <!-- <h1>평가 결과 보여주기</h1> -->
+</body>
+</html>
+
+
+
+

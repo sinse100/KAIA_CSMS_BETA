@@ -1,0 +1,6 @@
+django
+boto3
+pandas
+openpyxl
+# uwsgi
+# uwsgi는 Windows에서 설치가 불가능

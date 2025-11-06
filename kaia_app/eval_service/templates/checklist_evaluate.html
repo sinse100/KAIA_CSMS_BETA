@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+{% load static %}
+<!-- (메모) 모든 정적 파일의 요청 경로를 eval_service/static/... 으로 설정-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>평가 내역</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" type="text/css">
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}"/>
+    <link rel="stylesheet" href="{% static 'css/checklist_evaluate.css' %}" type="text/css">
+</head>
+
+<body>
+    <!-- 네비게이션 바 별도로 import-->
+    {% include "base.html" %}
+
+    <div class="container">
+        <!-- 제목 -->
+        <header class="title">
+            <div class="title-container">
+                <img src="{% static 'img/evaluation_oem.png' %}" class="eval_oem_icon">
+                <h1>항목 평가</h1>
+            </div>
+        </header>
+        <!-- 구분선 -->
+        <hr class="divider">
+        <!-- 버튼 -->
+        <div class="submit-btn-container" id="upload-form">
+            <div>
+                <button class="zip-upload-btn" onclick="handleDownload()">제출물(ZIP) 다운로드</button>
+                <span id="zip-file-name" class="zip-file-name"><strong>{{ original_name }}</strong></span>
+            </div>
+            <button type="button" class="submit-btn" id="submitfile_button" onclick="handleSubmit()">평가 결과 제출</button>
+        </div>
+
+        <form method="POST" action="{% url 'eval_result_submit' %}" id="submit_result">
+            {% csrf_token %}
+            <input type="hidden" value="{{ file_key }}" name="file_key">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <!-- 표 머릿말 생성 -->
+                            {% for column in columns %}
+                            <th>{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                
+                    <tbody>
+                    <!-- 표의 각 행 생성 -->
+                    {% for row in table_data %}
+                    <tr>
+                        <td>{{row.번호}} <input type="hidden" value="{{row.번호}}" name="result{{row.번호}}[number]"></td>
+                        <td>{{row.범주}} <input type="hidden" value="{{row.범주}}" name="result{{row.번호}}[category]"></td>
+                        <td>{{row.항목}} </td>
+                        <td>{{ row.평가_기준 }} </td>
+                        <td class="icon">
+                            <button class="help-btn">
+                                <img src="{% static 'img/help_question.png' %}" alt="질문_예시">
+                                <span class="tooltip">{{row.질문_예시 | linebreaksbr}}</span>
+                            </button>
+                        </td>
+                        <td class="icon">
+                            <button class="help-btn">
+                                <img src="{% static 'img/help_question.png' %}" alt="증거물 예시">
+                                <span class="tooltip">{{row.증거자료_예시  | linebreaksbr }}</span>
+                            </button>
+                        </td>
+                        <td class="icon">
+                            <button class="help-btn">
+                                <img src="{% static 'img/help_question.png' %}" alt="불합격 사례">
+                                <span class="tooltip">{{ row.인증기준_불합격_사례  | linebreaksbr }}</span>
+                            </button>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="radio" name="result{{row.번호}}[passfail]" value="P" checked> 합격
+                            </label>
+                            <label>
+                                <input type="radio" name="result{{row.번호}}[passfail]" value="F"> 불합격
+                            </label>
+                        </td>
+                        <td>
+                            <!--<input type="text" value="" class="eval_result_data" id="pass_failure_rationale" placeholder="통과 및 불합격 사유 입력">-->
+                            <textarea class="pass_failure_rationale" name="result{{row.번호}}[rationale]"  placeholder="통과 및 불합격 사유 입력">asd</textarea>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </form>
+                        <!-- 추가 행 -->
+                    </tbody>
+                </table>
+                <!-- 여기에 평가 항목 표 HTML 추가 -->
+        </div>
+        </form>
+    </div>
+
+    <script>
+        function handleDownload(){
+            location.href= "{{ download_link | safe}}";
+        }
+
+        function handleSubmit() {
+            if (!validateRadioGroups()){
+                alert("모든 평가 결과를 우선 기입하세요.");
+                return ;
+            }
+
+            if (!validateRationale()){
+                alert("모든 항목에 평가 사유를 작성해주십시오.");
+                return;
+            }
+
+            document.getElementById('submit_result').submit();
+        }
+
+        function validateRadioGroups() {
+            // 모든 라디오 그룹의 `name` 속성을 확인
+            const radioGroups = new Set();
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radioGroups.add(radio.name); // 각 라디오 버튼의 name 값을 추가
+            });
+
+            // 선택되지 않은 그룹 확인
+            const unselectedGroups = [];
+            radioGroups.forEach(name => {
+                const selectedRadio = document.querySelector(`input[name="${name}"]:checked`);
+                if (!selectedRadio) {
+                    unselectedGroups.push(name); // 선택되지 않은 그룹 추가
+                }
+            });
+
+            // 경고 출력
+            if (unselectedGroups.length > 0) {
+                return false;
+            } else {
+               return true;
+            }
+        }
+            
+        function validateRationale() {
+            const textareas = document.querySelectorAll('textarea.pass_failure_rationale');
+            for (let tarea of textareas) {
+                //alert(tarea.value)
+                if(! tarea.value.trim()){
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        document.querySelectorAll('.pass_failure_rationale').forEach(textarea => {
+            textarea.addEventListener('input', function () {
+                this.style.height = 'auto'; // 높이를 초기화
+                this.style.height = `${this.scrollHeight}px`; // 입력된 내용에 따라 높이 설정
+            });
+
+            // 초기화: 페이지 로드 시 기본 높이 설정
+            textarea.style.height = 'auto';
+            textarea.style.height = `${textarea.scrollHeight}px`;
+        });
+    </script>
+</body>
+</html>
