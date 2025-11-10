@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>평가 내역</title>
+    <title>자동차 사이버보안 관리 시스템(CSMS) 항목 평가</title>
     <link rel="stylesheet" href="{% static 'css/base.css' %}" type="text/css">
     <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}"/>
     <link rel="stylesheet" href="{% static 'css/checklist_evaluate_copy.css' %}" type="text/css">
@@ -22,9 +22,9 @@
         <!-- 제목 -->
         <header class="title">
             <div class="title-container">
-                <img src="{% static 'img/evaluation_oem.png' %}" class="eval_oem_icon">
-                <h1>항목 평가</h1>
+                <h1>자동차 사이버보안 관리 시스템(CSMS) 항목 평가</h1>
             </div>
+            <p class="subtitle">평가자는 자신에게 할당된 피평가자의 개인정보 및 요청한 평가 자료를 리스트로 관리하고 평가할 수 있습니다.</p>
         </header>
         <!-- 구분선 -->
         <hr class="divider">
@@ -37,6 +37,8 @@
             <button type="button" class="submit-btn" id="submitfile_button" onclick="handleSubmit()">평가 결과 제출</button>
         </div>
 
+        <!-- 삭제 요청된 항목 정보 표시 섹션 제거 -->
+        
         <form method="POST" action="{% url 'eval_result_submit' %}" id="submit_result">
             {% csrf_token %}
             <input type="hidden" value="{{ file_key }}" name="file_key">
@@ -44,10 +46,13 @@
                 <table>
                     <thead>
                         <tr>
-                            <!-- 표 머릿말 생성 -->
-                            {% for column in columns %}
-                            <th>{{ column }}</th>
-                            {% endfor %}
+                            <!-- 표 머릿말 생성: '식별', '구분', '항목', '평가 기준', '평가 결과', '평가 사유' 만 남김 -->
+                            <th>식별</th>
+                            <th>구분</th>
+                            <th>항목</th>
+                            <th>평가 기준</th>
+                            <th>평가 결과</th>
+                            <th>평가 사유</th>
                         </tr>
                     </thead>
                 
@@ -55,29 +60,15 @@
                     <!-- 표의 각 행 생성 -->
                     {% for row in table_data %}
                     <tr>
-                        <td>{{row.번호}} <input type="hidden" value="{{row.번호}}" name="result{{row.번호}}[number]"></td>
+                        <!-- '번호' 대신 '식별'을 표시하고 숨김 필드에는 원래 번호 또는 식별자를 유지 -->
+                        <td>CSMS_{{row.번호}} <input type="hidden" value="{{row.번호}}" name="result{{row.번호}}[number]"></td>
+                        <!-- '범주' 대신 '구분'을 표시하고 숨김 필드에 유지 -->
                         <td>{{row.범주}} <input type="hidden" value="{{row.범주}}" name="result{{row.번호}}[category]"></td>
                         <td>{{row.항목}} </td>
                         <td>{{ row.평가_기준 }} </td>
-                        <td class="icon">
-                            <button class="help-btn">
-                                <img src="{% static 'img/help_question.png' %}" alt="질문_예시">
-                                <span class="tooltip">{{row.질문_예시 | linebreaksbr}}</span>
-                            </button>
-                        </td>
-                        <td class="icon">
-                            <button class="help-btn">
-                                <img src="{% static 'img/help_question.png' %}" alt="증거물 예시">
-                                <span class="tooltip">{{row.증거자료_예시  | linebreaksbr }}</span>
-                            </button>
-                        </td>
-                        <td class="icon">
-                            <button class="help-btn">
-                                <img src="{% static 'img/help_question.png' %}" alt="불합격 사례">
-                                <span class="tooltip">{{ row.인증기준_불합격_사례  | linebreaksbr }}</span>
-                            </button>
-                        </td>
-                        <td>
+                        
+                        <!-- 평가 결과 셀: 가운데 정렬 적용 -->
+                        <td class="eval-result-cell">
                             <label>
                                 <input type="radio" name="result{{row.번호}}[passfail]" value="P"> 합격
                             </label>
@@ -85,21 +76,19 @@
                                 <input type="radio" name="result{{row.번호}}[passfail]" value="F"> 불합격
                             </label>
                         </td>
-                        <td>
-                            <!--<input type="text" value="" class="eval_result_data" id="pass_failure_rationale" placeholder="통과 및 불합격 사유 입력">-->
-                            <textarea class="pass_failure_rationale" name="result{{row.번호}}[rationale]"  placeholder="통과 및 불합격 사유 입력"></textarea>
+                        <!-- 평가 사유 셀: 가운데 정렬 적용 -->
+                        <td class="eval-rationale-cell">
+                            <textarea class="pass_failure_rationale" name="result{{row.번호}}[rationale]"  placeholder=" 통과 및 불합격 사유를 입력해주세요."></textarea>
                         </td>
                     </tr>
                     {% endfor %}
-                    </form>
-                        <!-- 추가 행 -->
                     </tbody>
                 </table>
-                <!-- 여기에 평가 항목 표 HTML 추가 -->
-        </div>
+            </div>
         </form>
     </div>
 
+    <!-- 로딩 오버레이는 그대로 유지 -->
     <div id="loading-overlay" class="loading-overlay" style="display: none;">
         <div class="loading-content">
             <div class="spinner" id="spinner"></div>
@@ -110,6 +99,7 @@
     </div>
 
     <script>
+        // 기존 JavaScript 코드는 유지
         function handleDownload(){
             location.href= "{{ download_link | safe}}";
         }
@@ -125,17 +115,23 @@
             const successIcon = document.getElementById('upload_success');
             const failureIcon = document.getElementById('upload_failure');
 
+            // alert 대신 커스텀 모달 사용 필요 (요청 사항에 alert 제거가 없으므로 임시로 유지)
             if (!validateRadioGroups()){
                 alert("모든 평가 결과를 우선 기입하세요.");
                 return ;
             }
 
+            // alert 대신 커스텀 모달 사용 필요 (요청 사항에 alert 제거가 없으므로 임시로 유지)
             if (!validateRationale()){
                 alert("모든 항목에 평가 사유를 작성해주십시오.");
                 return;
             }
 
             loadingOverlay.style.display = 'flex';
+            spinner.style.display = 'block';
+            successIcon.style.display = 'none';
+            failureIcon.style.display = 'none';
+            loadingMessage.textContent = "증거물 업로드 중";
 
             // Ajax 요청 보내기
             fetch("{% url 'eval_result_submit' %}", { // Django의 URL 리버스를 통해 서버 URL 작성
@@ -144,7 +140,7 @@
             })
             .then(response => {
                 if (response.ok) {
-                                        // 성공 메시지 표시
+                    // 성공 메시지 표시
                     spinner.style.display = 'none';
                     successIcon.style.display = 'block';
                     loadingMessage.textContent = "업로드가 성공적으로 완료되었습니다!";
@@ -158,7 +154,7 @@
             .catch(error => {
                     // 실패 메시지 표시
                 spinner.style.display = 'none';
-                failureIcon.style.display = 'block';                
+                failureIcon.style.display = 'block';         
                 loadingMessage.textContent = "업로드 중 오류가 발생했습니다.";
             })
             .finally(() => {
@@ -169,33 +165,14 @@
                     successIcon.style.display = 'none';
                     spinner.style.display = 'block';
                     loadingMessage.textContent = "증거물 업로드 중"
-                    location.href="/"
+                    // location.href="/" // 제출 후 페이지 이동 (원래 코드에서 주석 해제)
                 }, 3000); // 3초 후 로딩창 닫기
             });
 
             // 기본 버튼 동작 방지
-    return false;
-}
+        return false;
+    }
 
-
-        /*
-        function handleSubmit() {
-
-
-
-            if (!validateRadioGroups()){
-                alert("모든 평가 결과를 우선 기입하세요.");
-                return ;
-            }
-
-            if (!validateRationale()){
-                alert("모든 항목에 평가 사유를 작성해주십시오.");
-                return;
-            }
-
-            document.getElementById('submit_result').submit();
-        }
-            */
 
         function validateRadioGroups() {
             // 모든 라디오 그룹의 `name` 속성을 확인
@@ -224,7 +201,6 @@
         function validateRationale() {
             const textareas = document.querySelectorAll('textarea.pass_failure_rationale');
             for (let tarea of textareas) {
-                //alert(tarea.value)
                 if(! tarea.value.trim()){
                     return false;
                 }

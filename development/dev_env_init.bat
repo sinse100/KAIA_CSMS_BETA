@@ -25,7 +25,7 @@ set "DJANGO_SUPERUSER_EMAIL=%~1@example.com"
 
 REM === 가상환경 생성 및 활성화 ===
 if not exist ..\myvenv (
-    python -m venv ..\myvenv
+    py -m venv ..\myvenv
 )
 call ..\myvenv\Scripts\activate.bat
 
@@ -43,10 +43,10 @@ REM === 패키지 설치 ===
 pip install -r requirements.txt
 
 REM === DB 마이그레이션 ===
-python manage.py migrate --run-syncdb
+py manage.py migrate --run-syncdb
 
 REM === 관리자 계정 생성 ===
-python manage.py createsuperuser --username %DJANGO_SUPERUSER_USERNAME% --email %DJANGO_SUPERUSER_EMAIL% --noinput || echo [!] 관리자 계정 이미 존재함
+py manage.py createsuperuser --username %DJANGO_SUPERUSER_USERNAME% --email %DJANGO_SUPERUSER_EMAIL% --noinput || echo [!] 관리자 계정 이미 존재함
 
 REM === 정적 파일 수집 ===
-python manage.py collectstatic --noinput
+py manage.py collectstatic --noinput

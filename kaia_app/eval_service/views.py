@@ -10,6 +10,14 @@ from datetime import datetime
 from django.db import transaction
 from collections import defaultdict
 
+# 마이페이지 관련 코드
+from django.contrib.auth import update_session_auth_hash
+# (User 모델은 이미 임포트 되어 있어야 함)
+from django.contrib.auth.models import User
+
+# ~list 페이지
+from django.core.paginator import Paginator
+
 from django.contrib import auth
 from django.conf import settings
 
@@ -28,6 +36,9 @@ from .models import *
 ## (메모) main : 홈페이지 백엔드
 def main(request):
     return render(request, 'main.html')
+
+def wating(request):
+    return render(request, 'wating.html')
 
 ## (메모) signup : 회원가입 백엔드
 def signup(request):
@@ -193,10 +204,12 @@ def oem_submit_evidence(request):
             print(zip_file)
             upload_submission_file(settings.S3_CLIENT,request.user.username,zip_file,request.session['current_checklist'])
             request.session['current_checklist'] = ""
-            return JsonResponse({"status": "success", "message": "파일이 성공적으로 업로드되었습니다."}, status=200)
+           ## return JsonResponse({"status": "success", "message": "파일이 성공적으로 업로드되었습니다."}, status=200)
+            return render (request, 'wating.html')
         except Exception as e:
             print(f'파일 업로드 중 오류 발생: {str(e)}')
             return JsonResponse({"status": "error", "message": "파일 업로드 중 오류가 발생했습니다."}, status=500)
+        
     else:
         return alert_and_redirect( '잘못된 접근 방식입니다.', request.META.get('HTTP_REFERER', '/'))
 
@@ -208,18 +221,33 @@ def oem_list_eval(request):
     try:
         files_metadata = search_user_files(settings.S3_CLIENT, request.user.username)
         files_metadata = sorted(files_metadata, key=lambda x: x['created_time'],reverse=True)
-        
+
         for d in files_metadata:
             d["created_time"] = datetime.datetime.strptime(d["created_time"], "%Y%m%d%H%M%S").strftime("%Y-%m-%d %H:%M:%S")
-        
-        current_page_number = request.GET.get('page')
-        if not(current_page_number is None):
-            current_page_number = int(current_page_number )
-        else:
-            current_page_number = 1    
 
-        paination_obj = get_paginater(current_page_number,files_metadata)
-        return render(request, 'oem_list_eval.html',paination_obj)
+        # --- (수정) Django Paginator 로직 ---
+        page_number = request.GET.get('page', 1) # 현재 페이지 번호, 기본값은 1
+        
+        # (수정) Paginator 객체 생성 (파일 목록, 페이지당 5개)
+        paginator = Paginator(files_metadata, 5) 
+
+        # (수정) 현재 페이지에 해당하는 데이터 가져오기
+        page_obj = paginator.get_page(page_number)
+        
+        # (수정) 페이지 범위 계산 (최대 5개까지 보이도록, 예: 1 2 3 4 5)
+        page_range = paginator.get_elided_page_range(number=page_number, on_each_side=2, on_ends=0)
+
+        context = {
+            'page_data': page_obj.object_list, # (수정) 현재 페이지의 5개 데이터
+            'page_number': page_obj.number,      # (수정) 현재 페이지 번호
+            'page_count': paginator.num_pages, # (수정) 전체 페이지 수
+            'prev_page': page_obj.previous_page_number if page_obj.has_previous() else 0, # (수정) 이전 페이지 번호
+            'next_page': page_obj.next_page_number if page_obj.has_next() else 0,     # (수정) 다음 페이지 번호
+            'page_range': page_range,            # (수정) 표시할 페이지 번호 목록
+        }
+
+        return render(request, 'oem_list_eval.html', context)
+        # --- (수정 끝) ---
 
     except Exception as e:
         return alert_and_redirect(f'파일 조회 중 오류 발생: {str(e)}', request.META.get('HTTP_REFERER', '/'))
@@ -238,15 +266,28 @@ def evl_list_eval(request):
         for d in files_metadata:
             d["created_time"] = datetime.datetime.strptime(d["created_time"], "%Y%m%d%H%M%S").strftime("%Y-%m-%d %H:%M:%S")
         
-        current_page_number = request.GET.get('page')
-        if not(current_page_number is None):
-            current_page_number = int(current_page_number )
-        else:
-            current_page_number = 1    
+        # --- (수정) Django Paginator 로직 ---
+        page_number = request.GET.get('page', 1) # 현재 페이지 번호, 기본값은 1
+        
+        # (수정) Paginator 객체 생성 (파일 목록, 페이지당 5개)
+        paginator = Paginator(files_metadata, 5) 
+        
+        # (수정) 현재 페이지에 해당하는 데이터 가져오기
+        page_obj = paginator.get_page(page_number)
+        
+        # (수정) 페이지 범위 계산 (최대 5개까지 보이도록, 예: 1 2 3 4 5)
+        page_range = paginator.get_elided_page_range(number=page_obj.number, on_each_side=2, on_ends=0)
 
-        paination_obj = get_paginater(current_page_number,files_metadata)
-        print(paination_obj['page_data'])
-        return render(request, 'evl_list_eval.html',paination_obj)
+        context = {
+            'page_data': page_obj.object_list, # (수정) 현재 페이지의 5개 데이터
+            'page_number': page_obj.number,      # (수정) 현재 페이지 번호
+            'page_count': paginator.num_pages, # (수정) 전체 페이지 수
+            'prev_page': page_obj.previous_page_number if page_obj.has_previous() else 0, # (수정) 이전 페이지 번호
+            'next_page': page_obj.next_page_number if page_obj.has_next() else 0,     # (수정) 다음 페이지 번호
+            'page_range': page_range,            # (수정) 표시할 페이지 번호 목록
+        }
+        
+        return render(request, 'evl_list_eval.html', context)
 
     except Exception as e:
         return alert_and_redirect(f'파일 조회 중 오류 발생: {str(e)}', request.META.get('HTTP_REFERER', '/'))
@@ -290,6 +331,62 @@ def checklist_evaluate(request):
     return render (request, 'checklist_evaluate_copy.html', context)
 
 
+# ## (메모) eval_result_submit : 평가기관의 평가 수행 페이지에서 '평가 결과 제출'을 클릭했을 때 실행되는 백엔드 코드
+# @login_required
+# @csrf_exempt
+# def eval_result_submit(request):
+#     if request.user.kaia_user_profile.mb_type != 'EVL':
+#         return JsonResponse({"status": "error", "message": "평가자만이 평가 가능합니다."}, status=500)
+
+#     if request.method == 'GET':
+#         return JsonResponse({"status": "error", "message": "잘못된 접근입니다."}, status=500)
+    
+#     file_key = request.POST.get('file_key')    
+
+#     if kaia_eval_result.objects.filter(submission_id=file_key).exists():
+#         return JsonResponse({"status": "error", "message": "이미 누군가에 의해 평가가 완료된 파일입니다."}, status=500)
+   
+#     eval_results= [] 
+#     key_count = 0
+
+#     grouped_data = defaultdict(dict)
+
+#         # 정규표현식으로 접두사와 나머지 부분 분리
+#     pattern = r'(result\d+)\[(.*?)\]'
+#     for key, value in request.POST.items():
+#         match = re.fullmatch(pattern, key)
+#         if match:
+#             prefix = match.group(1)  # result와 번호 (예: result1, result2)
+#             sub_key = match.group(2)  # 대괄호 안의 키 (예: aaa, bbb, gggg)
+    
+#             grouped_data[prefix][sub_key] = value
+
+#     for prefix, group in grouped_data.items():
+#         eval_result = kaia_eval_result()
+
+#         eval_result.number = int(group['number'])
+#         eval_result.category = group['category']
+#         eval_result.passfail = group['passfail']
+#         eval_result.rationale = group['rationale']
+#         eval_result.evaluated_date = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+#         print('1')
+#         eval_result.submission_id = file_key
+#         eval_result.evaluator_email = request.user.email
+
+#         eval_results.append(eval_result)
+
+#     try:
+#         with transaction.atomic():
+#             print('2')
+#             modify_submission_metadata(settings.S3_CLIENT,file_key,'state','done')
+#             print('3')
+#             kaia_eval_result.objects.bulk_create(eval_results)
+#         return JsonResponse({"status": "success", "message": "평가 결과 제출 완료"}, status=200)
+#     except Exception as e:
+#         modify_submission_metadata(settings.S3_CLIENT,file_key,'state','pend')
+#         return JsonResponse({"status": "error", "message": "평가 결과 제출 도중 오류 발생"}, status=500)
+
+#         ##print(f"{prefix}: {group}")
 ## (메모) eval_result_submit : 평가기관의 평가 수행 페이지에서 '평가 결과 제출'을 클릭했을 때 실행되는 백엔드 코드
 @login_required
 @csrf_exempt
@@ -310,7 +407,7 @@ def eval_result_submit(request):
 
     grouped_data = defaultdict(dict)
 
-        # 정규표현식으로 접두사와 나머지 부분 분리
+    # 정규표현식으로 접두사와 나머지 부분 분리
     pattern = r'(result\d+)\[(.*?)\]'
     for key, value in request.POST.items():
         match = re.fullmatch(pattern, key)
@@ -334,31 +431,46 @@ def eval_result_submit(request):
 
         eval_results.append(eval_result)
 
+    # --- ▼▼▼ (수정) 여기가 핵심입니다 ▼▼▼ ---
     try:
         with transaction.atomic():
+            # (수정 1) 데이터베이스 저장을 먼저 수행합니다.
+            kaia_eval_result.objects.bulk_create(eval_results)
             print('2')
+            
+            # (수정 2) DB 저장이 성공했을 때만 S3 메타데이터를 'done'으로 변경합니다.
             modify_submission_metadata(settings.S3_CLIENT,file_key,'state','done')
             print('3')
-            kaia_eval_result.objects.bulk_create(eval_results)
+            
         return JsonResponse({"status": "success", "message": "평가 결과 제출 완료"}, status=200)
     except Exception as e:
-        modify_submission_metadata(settings.S3_CLIENT,file_key,'state','pend')
+        # (수정 3) DB 저장이 실패하면 S3 상태는 어차피 'pend'이므로 롤백 코드가 필요 없습니다.
+        # modify_submission_metadata(settings.S3_CLIENT,file_key,'state','pend') (<- 이 줄 삭제)
+        print(f"eval_result_submit Error: {str(e)}") # (디버깅용) 에러 로그 추가
         return JsonResponse({"status": "error", "message": "평가 결과 제출 도중 오류 발생"}, status=500)
 
-        ##print(f"{prefix}: {group}")
 
-
-## (메모) show_eval_result : 평가기관과 OEM의 평가 결과 요약 페이지 관련 백엔드 코드
 @login_required
 def show_eval_result(request):
     file_key = request.GET.get('submit')
     
     ## DB 검색
     queryset=kaia_eval_result.objects.filter(submission_id=file_key)
-    result_list = list(queryset.values())
-    ##print(eval_results)
+    
+    # --- ▼▼▼ (수정) IndexError 방지 코드 ▼▼▼ ---
+    # (원인) 평가 결과가 아직 DB에 없는 상태 (queryset이 비어있음)
+    if not queryset.exists():
+        # (해결) 평가 내역 리스트 페이지로 돌려보내며 알림 띄우기
+        return alert_and_redirect(
+            '아직 평가가 완료되지 않았거나, 평가 결과가 존재하지 않습니다. 혹은 평가자가 본인이 아닙니다.', 
+            request.META.get('HTTP_REFERER', '/') # 이전 페이지로 리다이렉트
+        )
+    # --- ▲▲▲ (수정) 코드 끝 ▲▲▲ ---
 
+    result_list = list(queryset.values())
+    
     ## 범주의 리스트
+    # (참고) 이제 result_list가 비어있지 않으므로 아래 코드는 안전합니다.
     category = list(set(item["category"] for item in result_list))
 
     ##항목별 달성률
@@ -375,11 +487,123 @@ def show_eval_result(request):
     table_data, columns = get_current_checklist(settings.S3_CLIENT)
     columns = columns + ['평가 결과', '평가 사유']
 
-    ##print(table_data)
-
     for key in completion_ratio:
         completion_ratio[key] = round(completion_ratio[key] * 100, 1)
 
+    
+    # --- ▼▼▼ (수정) 파일 맨 끝에서 가져온 "누락된 코드" ▼▼▼ ---
+    # 딕셔너리를 합칠 리스트 초기화
+    merged_list = []
+
+    # list1을 기준으로 병합 수행
+    for item1 in table_data:
+        for item2 in result_list:
+            # '항목'과 'num' 키의 값이 같을 경우
+            if item1["번호"] == item2["number"]:
+                # 두 딕셔너리를 병합
+                merged_dict = {**item1, **item2}
+                merged_list.append(merged_dict)
+    
+    print(merged_list)
+
+    ## 범주
+    context = {
+        'category' : category, 
+        'completion_ratio' : json.dumps(completion_ratio),
+        'result_list' : merged_list,
+        'evaluation_date' : evaluation_date,
+        'evaluator_email': evaluator_email,
+        'created_date' : created_time,
+        'table_data' : table_data,
+        "columns" : columns
+    }
+    return render(request,'show_eval_result.html',context)
+
+    
+## (메모) logout : 로그아웃 관련 백엔드 코드
+@login_required
+def logout(request):
+    auth.logout(request)              ## (메모) 세션 삭제 
+    return redirect('/')              ## (메모) 메인 페이지로 리다이렉트
+
+
+## (메모) mypage : 마이페이지 백엔드 (신규 추가)
+## (메모) views.py 상단에 re, update_session_auth_hash 임포트 추가
+import re
+from django.contrib.auth import update_session_auth_hash
+# (User 모델은 이미 임포트 되어 있어야 함)
+from django.contrib.auth.models import User 
+
+
+# ... (기존 함수들) ...
+
+
+## (메모) mypage : 마이페이지 백엔드 (POST 로직 수정)
+@login_required
+def mypage(request):
+    if request.method == 'POST':
+        # --- 1. 폼 데이터 가져오기 ---
+        # (참고: mypage.html에 <input name="username">, <input name="new_password"> 등이 있어야 함)
+        new_username = request.POST.get('username')
+        new_pass = request.POST.get('new_password')
+        new_pass_confirm = request.POST.get('new_password_confirm')
+        
+        user = request.user
+        
+        # --- 2. ID(username) 변경 로직 ---
+        if new_username and new_username != user.username:
+            # 2-1. ID 유효성 검사 (signup.html 기준: 4~12자, 영문/숫자)
+            if not (4 <= len(new_username) <= 12 and new_username.isalnum()):
+                return render(request, 'mypage.html', {'error': '아이디는 4~12자의 영문과 숫자만 사용 가능합니다.'})
+
+            # 2-2. ID 중복 검사 (본인을 제외하고)
+            if User.objects.filter(username=new_username).exclude(pk=user.pk).exists():
+                return render(request, 'mypage.html', {'error': '이미 존재하는 아이디입니다.'})
+            
+            # 2-3. ID 변경 저장
+            user.username = new_username
+            user.save() # ID 변경 사항 저장
+
+        # --- 3. 비밀번호 변경 로직 ---
+        # (참고) 새 비밀번호 필드 중 하나라도 값이 있으면 변경 시도로 간주
+        if new_pass or new_pass_confirm:
+            
+            # 3-1. 비밀번호 확인 일치 여부 검사 ("비밀번호가 틀림")
+            if new_pass != new_pass_confirm:
+                return render(request, 'mypage.html', {'error': '비밀번호가 틀림'})
+
+            # 3-2. 비밀번호 정책 유효성 검사
+            # (signup.html JS 기준: 10자 이상, 영문, 숫자, 특수문자 포함)
+            is_valid_length = len(new_pass) >= 10
+            has_letter = re.search(r'[a-zA-Z]', new_pass)
+            has_number = re.search(r'[0-9]', new_pass)
+            has_special = re.search(r'[!@#$%^&*(),.?":{}|<>]', new_pass) 
+
+            if not (is_valid_length and has_letter and has_number and has_special):
+                # "비밀번호가 10자 미만이거나..."
+                return render(request, 'mypage.html', {'error': '비밀번호가 10자 미만이거나, 영문, 숫자, 특수문자 중 어느 하나가 포함되지 않음'})
+
+            # 3-3. 비밀번호 변경 저장
+            user.set_password(new_pass) # (중요) 해시하여 저장
+            user.save() # 비밀번호 변경 사항 저장
+            
+            # (중요) 비밀번호 변경 후에도 로그인 유지를 위해 세션 갱신
+            update_session_auth_hash(request, user)
+
+        # --- 4. 모든 변경 완료 (성공) ---
+        return render(request, 'mypage.html', {'success_message': '회원 정보가 성공적으로 변경되었습니다.'})
+
+    # GET 요청 (페이지 최초 접근 시)
+    return render(request, 'mypage.html')
+
+
+## (메모) about : About 페이지 백엔드 코드 (구현x)
+# def about(request):
+## (메모) about : About 페이지 백엔드 코드 (구현x)
+def about(request):
+    # (참고) 파일 상단에 이미 동일한 함수가 정의되어 있습니다.
+    # (이 함수 안에 있던 코드는 show_eval_result 함수로 다시 옮겼습니다.)
+    return HttpResponse("This page is about.")
     
     # 딕셔너리를 합칠 리스트 초기화
     merged_list = []

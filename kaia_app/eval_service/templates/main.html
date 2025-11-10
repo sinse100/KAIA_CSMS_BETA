@@ -18,7 +18,7 @@
     <!-- 네비게이션 바 별도로 import-->
     {% include "base.html" %}
 
-    <main>
+    {% comment %} <main>
         <div class="main-box">
           <section class="intro">
             <h1>자동차 사이버 보안 관리 시스템(CSMS) 평가 서비스</h1>
@@ -80,7 +80,78 @@
         </div>
     </section>
 </div>
-</main>
+</main> {% endcomment %}
+    <main>
+        
+        <section class="hero-section" style="
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('{% static 'img/home_back.png' %}'); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat;
+            min-height: 55vh; /* 세로 길이 조절 */
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+        ">
+            <div class="hero-content">
+                <h1>자동차 사이버 보안 관리 시스템(CSMS)</span></h1>
+                <p class="subtitle">CyberSecurity Management System</p>
+                <a href="#" class="view-details-button">자세히 보기</a>
+            </div>
+        </section>
+        
+        <div class="main-box">
+            
+            <section class="main-features">
+                <h2>사이버보안 관리 시스템 서비스</h2>
+                <p class="section-en-title">CSMS Evaluation Service for Vehicle</p>
+                <div class="content-text-box">
+                    <p>자동차 사이버 보안 관리 시스템(CSMS) 평가에 필요한 평가 자료 관리 및 평가 시스템으로 평가자와 피평가자 간 효율적인 자료관리 서비스를 제공합니다.</p>
+                    <p>CSMS 평가 과정을 체계적을 관리하며 항목별 평가 진행도를 실시간으로 확인하여 전체적인 평가 프로세스 시간을 단축합니다.</p>
+                </div>
+            </section>
+            
+            <section class="main-features">
+                <h2>사이버보안 관리 시스템 평가 서비스의 주요 기능</h2>
+                <p class="section-en-title">Main Features of the CSMS Evaluation Service</p>
+
+                <div class="features-content-single">
+                    <ul class="feature-list-image-style">
+                        <li>
+                            <p class="feature-item-text">
+                                <span class="feature-title">평가 신청: </span> 피평가자(OEM)는 CSMS 평가에 해당하는 항목 리스트를 엑셀과 같은 형태로 제출하고 이를 평가 신청 할 수 있습니다.
+                            </p>
+                        </li>
+                        <li>
+                            <p class="feature-item-text">
+                                <span class="feature-title">항목 평가: </span> 평가자는 자신에게 할당된 피평가자의 개인정보 및 요청한 평가 자료를 리스트로 관리하고 평가할 수 있습니다.
+                            </p>
+                        </li>
+                        <li>
+                            <p class="feature-item-text">
+                                <span class="feature-title">평가 결과 및 확인: </span> 평가 체크리스트 항목 분야별로 평가된 점수를 확인 가능하며 종합된 평가 점수를 바탕으로 한 차트를 통해 한 눈에 확인 할 수 있습니다.
+                            </p>
+                        </li>
+                        <li>
+                            <p class="feature-item-text">
+                                <span class="feature-title">평가 증거물 제출: </span> CSMS 평가 항목에서 평가 증거물 제출이 필요할 경우 해당하는 항목란에서 평가 증거물을 추가로 제출 할 수 있습니다.
+                            </p>
+                        </li>
+                    </ul>
+
+                    <div class="feature-image-bottom-box">
+                        <img src="{% static 'img/test_back.png' %}" alt="Evaluation Document Image">
+                    </div>
+                </div>
+            </section>
+
+        </div> 
+        <footer class="main-footer">
+            <p>www.krcsms.com</p>
+        </footer>
+    </main>
+
+
 <script>
     // 버튼 클릭 시 설명을 표시하는 함수
   document.querySelectorAll('.feature-button').forEach(button => {

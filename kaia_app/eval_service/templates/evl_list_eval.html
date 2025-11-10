@@ -2,8 +2,6 @@
 <html lang="ko">
 
 {% load static %}
-<!-- (메모) 모든 정적 파일의 요청 경로를 eval_service/static/... 으로 설정-->
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,7 +13,6 @@
 </head>
 
 <body>
-    <!-- 네비게이션 바 별도로 import-->
     {% include "base.html" %}
 
     <div class="container">
@@ -57,26 +54,28 @@
         </table>
         <div class="pagination">
             {% if 0 < prev_page %}
-            <a href="?page= {{ prev_page }}">
-                <img src="{% static 'img/left-arrow.png' %}" alt="이전" class="pagination-arrow">
+            <a href="?page={{ prev_page }}" class="pagination-arrow">
+                &lt;
             </a>
+            {% else %}
+            <a class="number_block_unclickable">&lt;</a>
             {% endif %}
+            
             {% for num in page_range %}
-                {% if num == page_number %}
-                <a class="number_block_unclickable" href="?page={{ num }}" >{{ num }}</a> <!--현재 페이지-->
-                {% else %}
-                <a class="number_block" href="?page={{ num }}">{{ num }}</a>
+                {% if num == '...' %}
+                    <span class="number_block_unclickable">...</span>
+                {% elif num == page_number %}
+                    <a class="number_block_unclickable" href="?page={{ num }}" >{{ num }}</a> {% else %}
+                    <a class="number_block" href="?page={{ num }}">{{ num }}</a>
                 {% endif %}
-            {% endfor %}    
-            <!--
-            <a class="number_block" href="?page=1">1</a>
-            <a class="number_block" href="?page=2">2</a>
-            <a class="number_block" href="?page=3">3</a>
-            -->
+            {% endfor %} 
+            
             {% if page_number < page_count %}
-            <a href="?page= {{ next_page }}">
-                <img src="{% static 'img/right-arrow.png' %}" alt="다음" class="pagination-arrow">
+            <a href="?page={{ next_page }}" class="pagination-arrow">
+                &gt;
             </a>
+            {% else %}
+            <a class="number_block_unclickable">&gt;</a>
             {% endif %}
         </div>
     </div>

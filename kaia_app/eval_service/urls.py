@@ -18,9 +18,11 @@ urlpatterns = [
     path('evl_list_eval/',views.evl_list_eval, name='evl_list_eval'),                    ## (메모) /oem_list_eval : 평가자가 본인의 평가 신청 내역을 확인을 위한 URL
     path('show_eval_result/',views.show_eval_result, name='show_eval_result'),            ## (메모) /oem_list_eval : 평가자 및 OEM이 평가 결과를 확인하기 위한 URL
     path('checklist_evaluate/',views.checklist_evaluate, name='checklist_evaluate'),     ## (메모) /checklist_evaluate : 평가자가 제출물을 평가하기위한 URL
-    path('eval_result_submit/', views.eval_result_submit, name = 'eval_result_submit')     ## (메모) /eval_result_submit :평가자가 평가 결과를 제출하기 위한 UEL
+    path('eval_result_submit/', views.eval_result_submit, name = 'eval_result_submit'),     ## (메모) /eval_result_submit :평가자가 평가 결과를 제출하기 위한 UEL
+    path('wating/', views.wating, name='wating'),
+    path('mypage/', views.mypage, name='mypage')  ## (메모) /mypage : 마이페이지 접속을 위한 URL
     ##path("signup_help", views.signup_help, name="signup_help")                
     ##path("about", views.about, name="about"),
-     ##path("/signup", views.signup, name="signup"),
+    ##path("/signup", views.signup, name="signup"),
     ##path("/logout", views.logout, name="logout")
 ]

@@ -34,7 +34,7 @@ cd /d ..\kaia_app
 
 REM === django 서버 가동 ===
 call ..\myvenv\Scripts\activate.bat
-python manage.py runserver
+py manage.py runserver
 
 endlocal & (
   set EMAIL_HOST_USER=%EMAIL_HOST_USER%

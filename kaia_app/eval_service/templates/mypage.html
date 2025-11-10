@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지</title>
+    
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/mypage.css' %}">
+</head>
+<body>
+
+    {% include "base.html" %}
+
+    <main class="mypage-container">
+        
+        <div class="page-title-header">
+            <h1>마이페이지</h1>
+            <div class="user-greeting">
+                {% if user.kaia_user_profile.mb_type == "OEM" %}
+                    <span class="badge">OEM</span>
+                {% else %}
+                    <span class="badge">평가자</span>
+                {% endif %}
+                {{ user.username }} 님
+            </div>
+        </div>
+        <hr class="divider">
+
+        <form action="{% url 'mypage' %}" method="post">
+            {% csrf_token %}
+
+            <section class="info-box">
+                <h2>개인 정보</h2>
+                
+                <div class="info-row">
+                    <label>이름</label>
+                    <span>{{ user.kaia_user_profile.mb_name }}</span>
+                </div>
+                <div class="info-row">
+                    <label>이메일</label>
+                    <span>{{ user.email }}</span>
+                </div>
+                <div class="info-row">
+                    <label>휴대폰 번호</label>
+                    <span>{{ user.kaia_user_profile.mb_hp }}</span>
+                </div>
+            </section>
+
+            <section class="info-box" id="account-section"> 
+                <h2>
+                    계정 정보
+                    </h2>
+                
+                <div class="info-row">
+                    <label for="username">아이디</label>
+                    <span class="view-mode">{{ user.username }}</span>
+                    <input type="text" id="username" name="username" value="{{ user.username }}" class="edit-mode" placeholder="4~12자 영문과 숫자">
+                </div>
+                
+                <div class="info-row">
+                    <label for="new_password">새 비밀번호</label>
+                    <span class="view-mode">************</span>
+                    <input type="password" id="new_password" name="new_password" class="edit-mode" placeholder="10자 이상, 영문, 숫자, 특수문자 조합">
+                </div>
+                <p id="password-error" class="error-message" style="display:none;">비밀번호가 10자 미만이거나, 영문, 숫자, 특수문자 중 어느 하나가 포함되지 않음</p>
+
+                
+                <div class="info-row">
+                    <label for="new_password_confirm">새 비밀번호 확인</label>
+                    <span class="view-mode">************</span>
+                    <input type="password" id="new_password_confirm" name="new_password_confirm" class="edit-mode" placeholder="새 비밀번호 다시 입력">
+                </div>
+                <p id="password-check-error" class="error-message" style="display:none;">비밀번호가 틀림</p>
+
+            </section>
+
+            <div class="button-group">
+                <button type="button" class="btn btn-edit view-mode" id="edit-account-btn">수정하기</button>
+                <button type="submit" class="btn btn-save edit-mode">저장</button>
+                <button type="button" class="btn btn-cancel edit-mode" id="cancel-edit-btn">취소</button>
+            </div>
+        </form>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- 1. 요소 선택 ---
+            const mainContainer = document.querySelector('.mypage-container');
+            const editBtn = document.getElementById('edit-account-btn');
+            const cancelBtn = document.getElementById('cancel-edit-btn');
+            
+            const passInput = document.getElementById('new_password');
+            const passConfirmInput = document.getElementById('new_password_confirm');
+            
+            const passError = document.getElementById('password-error');
+            const passCheckError = document.getElementById('password-check-error');
+
+            // --- 2. View/Edit 모드 토글 ---
+            
+            // "수정" 버튼 클릭 시
+            editBtn.addEventListener('click', function() {
+                mainContainer.classList.add('edit-active');
+            });
+            
+            // "취소" 버튼 클릭 시
+            cancelBtn.addEventListener('click', function() {
+                mainContainer.classList.remove('edit-active');
+                
+                // 입력값 및 오류 메시지 초기화
+                passInput.value = '';
+                passConfirmInput.value = '';
+                document.getElementById('username').value = '{{ user.username }}';
+                
+                passError.style.display = 'none';
+                passCheckError.style.display = 'none';
+            });
+
+            // --- 3. 실시간 유효성 검사 (signup.html 로직 적용) ---
+            
+            // 검사 함수: 비밀번호 정책
+            function validatePasswordPolicy() {
+                const password = passInput.value;
+                const isValidLength = password.length >= 10;
+                const hasLetter = /[a-zA-Z]/.test(password);
+                const hasNumber = /[0-9]/.test(password);
+                const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+                if (password.length > 0 && !(isValidLength && hasLetter && hasNumber && hasSpecial)) {
+                    passError.style.display = 'block';
+                } else {
+                    passError.style.display = 'none';
+                }
+            }
+
+            // 검사 함수: 비밀번호 일치
+            function validatePasswordMatch() {
+                const password = passInput.value;
+                const confirmPassword = passConfirmInput.value;
+                
+                if (confirmPassword.length > 0 && password !== confirmPassword) {
+                    passCheckError.style.display = 'block';
+                } else {
+                    passCheckError.style.display = 'none';
+                }
+            }
+
+            // '새 비밀번호' 입력창에 리스너 연결
+            passInput.addEventListener('input', function() {
+                validatePasswordPolicy();
+                validatePasswordMatch(); // 확인란도 같이 검사
+            });
+
+            // '새 비밀번호 확인' 입력창에 리스너 연결
+            passConfirmInput.addEventListener('input', validatePasswordMatch);
+        });
+    </script>
+
+    {% if error %}
+    <script>
+        alert("{{ error }}");
+    </script>
+    {% endif %}
+
+    {% if success_message %}
+    <script>
+        alert("{{ success_message }}");
+    </script>
+    {% endif %}
+
+</body>
+</html>

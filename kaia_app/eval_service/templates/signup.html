@@ -14,6 +14,9 @@
     
     <div id="main_container">
         <form class="login-form" method="post" action='{% url "signup" %}'>
+
+            <h1 class="page-title">회원 가입</h1>
+
             {% csrf_token %}
             <div class="try">
                 <div class="essential-notice">
@@ -45,8 +48,6 @@
                 </div>    
 
                 <h1>회원정보</h1>
-
-
             
                 <div class="client-signup-wrap">
                     <div class="client-signup-container">
@@ -67,9 +68,6 @@
 
                         <button class="self-auth-btn" type="submit">본인인증</button>
                     </div>
-
-                    
-            
 
                     <div class="client-box-wrap">
                         <div class="client-signup-box-two">
@@ -208,17 +206,8 @@
     document.addEventListener("DOMContentLoaded", function () {
         const passwordInput = document.getElementsByName('password')[0];
 
-        // 경고 메시지 span 생성
-        const warningMsg = document.createElement('span');
-        warningMsg.style.color = 'red';
-        warningMsg.style.fontSize = '0.9em';
-        warningMsg.style.display = 'none';
-        warningMsg.style.marginTop = '4px';
-        warningMsg.innerText = '비밀번호가 10자 미만이거나, 영문, 숫자, 특수문자 중 어느 하나가 포함되지 않음 ';
-
-        // 부모 컨테이너 바로 아래에 삽입 (비밀번호 입력창 아래로)
-        const container = passwordInput.closest('.base-signup-container');
-        container.insertAdjacentElement('afterend', warningMsg);
+        // (수정) HTML에 이미 있는 <p> 태그를 ID로 직접 선택합니다.
+        const warningMsg = document.getElementById('password-error');
 
         passwordInput.addEventListener('input', function () {
             const password = passwordInput.value;
@@ -228,10 +217,11 @@
             const hasNumber = /[0-9]/.test(password);
             const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-            if (isValidLength && hasLetter && hasNumber && hasSpecial) {
-                warningMsg.style.display = 'none';
-            } else {
+            // (참고) 입력값이 0보다 클 때만 오류를 표시하도록 수정 (선택 사항)
+            if (password.length > 0 && !(isValidLength && hasLetter && hasNumber && hasSpecial)) {
                 warningMsg.style.display = 'block';
+            } else {
+                warningMsg.style.display = 'none';
             }
         });
     });
@@ -241,17 +231,8 @@
     document.addEventListener("DOMContentLoaded", function () {
         const passwordInput = document.getElementsByName('passwordCheck')[0];
 
-        // 경고 메시지 span 생성
-        const warningMsg = document.createElement('span');
-        warningMsg.style.color = 'red';
-        warningMsg.style.fontSize = '0.9em';
-        warningMsg.style.display = 'none';
-        warningMsg.style.marginTop = '4px';
-        warningMsg.innerText = '비밀번호가 틀림.';
-
-        // 부모 컨테이너 바로 아래에 삽입 (비밀번호 입력창 아래로)
-        const container = passwordInput.closest('.base-signup-container');
-        container.insertAdjacentElement('afterend', warningMsg);
+        // (수정) HTML에 이미 있는 <p> 태그를 ID로 직접 선택합니다.
+        const warningMsg = document.getElementById('password-check-error');
 
         passwordInput.addEventListener('input', function () {
             const password_check = passwordInput.value;
@@ -259,10 +240,11 @@
 
             const isSame = password_check === password 
 
-            if (isSame) {
-                warningMsg.style.display = 'none';
-            } else {
+            // (참고) 입력값이 0보다 클 때만 오류를 표시하도록 수정 (선택 사항)
+            if (password_check.length > 0 && !isSame) {
                 warningMsg.style.display = 'block';
+            } else {
+                warningMsg.style.display = 'none';
             }
         });
     });
